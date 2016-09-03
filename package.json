@@ -1,0 +1,11 @@
+{
+  "name": "marvelql",
+  "version": "0.0.1",
+  "description": "GraphQL instance providing data on Marvel comics via their API.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
