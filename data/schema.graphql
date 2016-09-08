@@ -1,0 +1,28 @@
+type Character {
+  # Marvel API ID
+  id: Int
+
+  # Name of character
+  name: String
+
+  # A short bio or description of the character.
+  description: String
+
+  # The date the resource was most recently modified.
+  modified: String
+
+  # The canonical URL identifier for this resource
+  resourceURI: String
+  thumbnail: String
+}
+
+type Query {
+  characters: [Character]
+  character(
+    # Name of character
+    name: String
+
+    # Marvel API Character ID
+    id: String
+  ): Character
+}

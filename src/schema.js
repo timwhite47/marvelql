@@ -12,6 +12,7 @@ import {
   GraphQLObjectType,
   GraphQLString,
   GraphQLInt,
+  GraphQLList,
 } from 'graphql';
 
 const marvelApi = require('marvel-api');
@@ -22,6 +23,12 @@ const marvel = marvelApi.createClient({
 });
 
 const findByName = (name) => marvel.characters.findByName(name)
+  .then((response) => response.data[0]);
+
+const findAll = () => marvel.characters.findAll()
+  .then((response) => response.data);
+
+const findById = (id) => marvel.characters.find(id)
   .then((response) => response.data[0]);
 
 const characterType = new GraphQLObjectType({
@@ -58,6 +65,10 @@ const characterType = new GraphQLObjectType({
 const queryType = new GraphQLObjectType({
   name: 'Query',
   fields: () => ({
+    characters: {
+      type: new GraphQLList(characterType),
+      resolve: () => findAll(),
+    },
     character: {
       type: characterType,
       args: {
@@ -65,9 +76,18 @@ const queryType = new GraphQLObjectType({
           description: 'Name of character',
           type: GraphQLString,
         },
+        id: {
+          description: 'Marvel API Character ID',
+          type: GraphQLString,
+        },
       },
+      resolve: (root, { name, id }) => {
+        if (id) {
+          return findById(id);
+        }
 
-      resolve: (root, { name }) => findByName(name),
+        return findByName(name);
+      },
     },
   }),
 });
