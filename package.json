@@ -16,6 +16,7 @@
     "express": "^4.14.0",
     "express-graphql": "^0.5.4",
     "graphql": "^0.7.0",
+    "graphql-relay": "^0.4.3",
     "marvel-api": "^1.0.0"
   },
   "devDependencies": {

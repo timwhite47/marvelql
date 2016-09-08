@@ -13,7 +13,14 @@ import {
   GraphQLString,
   GraphQLInt,
   GraphQLList,
+  GraphQLID,
+  GraphQLNonNull,
 } from 'graphql';
+
+import {
+  nodeDefinitions,
+  fromGlobalId,
+} from 'graphql-relay';
 
 const marvelApi = require('marvel-api');
 
@@ -31,12 +38,20 @@ const findAll = () => marvel.characters.findAll()
 const findById = (id) => marvel.characters.find(id)
   .then((response) => response.data[0]);
 
+const { nodeInterface, nodeField } = nodeDefinitions(
+    (globalId) => {
+      const { id } = fromGlobalId(globalId);
+      return findById(id);
+    },
+    () => characterType,
+  );
+
 const characterType = new GraphQLObjectType({
   name: 'Character',
   fields: () => ({
     id: {
       description: 'Marvel API ID',
-      type: GraphQLInt,
+      type: new GraphQLNonNull(GraphQLID),
     },
     name: {
       description: 'Name of character',
@@ -60,14 +75,26 @@ const characterType = new GraphQLObjectType({
       resolve: (obj) => [obj.thumbnail.path, obj.thumbnail.extension].join('.'),
     },
   }),
+  interfaces: [nodeInterface],
+});
+
+const viewerType = new GraphQLObjectType({
+  name: 'Viewer',
+  fields: () => ({
+    characters: {
+      type: new GraphQLList(characterType),
+      resolve: () => findAll(),
+    },
+  })
 });
 
 const queryType = new GraphQLObjectType({
   name: 'Query',
   fields: () => ({
-    characters: {
-      type: new GraphQLList(characterType),
-      resolve: () => findAll(),
+    node: nodeField,
+    viewer: {
+      type: viewerType,
+      resolve: () => ({})
     },
     character: {
       type: characterType,
