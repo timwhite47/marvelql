@@ -17,13 +17,20 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 
+import Promise from 'bluebird';
+
 import {
   nodeDefinitions,
   fromGlobalId,
 } from 'graphql-relay';
 
+import {
+  range,
+  flatten,
+} from 'lodash';
+
 const marvelApi = require('marvel-api');
-const LIMIT = 100;
+const API_LIMIT = 100;
 
 const marvel = marvelApi.createClient({
   publicKey: MARVEL_API_PUBLIC_KEY,
@@ -33,8 +40,10 @@ const marvel = marvelApi.createClient({
 const findByName = (name) => marvel.characters.findByName(name)
   .then((response) => response.data[0]);
 
-const findAll = () => marvel.characters.findAll(LIMIT)
-  .then((response) => response.data);
+const findAll = ({ limit }) => Promise.map(range(limit / API_LIMIT), (offset) => marvel
+  .characters.findAll(API_LIMIT, offset)
+  .then((response) => response.data))
+  .then((responses) => flatten(responses).slice(0, limit));
 
 const findById = (id) => marvel.characters.find(id)
   .then((response) => response.data[0]);
@@ -92,16 +101,20 @@ const viewerType = new GraphQLObjectType({
           description: 'Search String to look up characters',
           type: GraphQLString,
         },
+        limit: {
+          description: 'Number of characters to return',
+          type: GraphQLInt,
+        },
       },
-      resolve: (root, { search }) => {
+      resolve: (root, { search, limit }) => {
         if (search) {
           return searchByName(search);
         }
 
-        return findAll();
+        return findAll({ limit });
       },
     },
-  })
+  }),
 });
 
 const queryType = new GraphQLObjectType({
@@ -110,7 +123,7 @@ const queryType = new GraphQLObjectType({
     node: nodeField,
     viewer: {
       type: viewerType,
-      resolve: () => ({})
+      resolve: () => ({}),
     },
     character: {
       type: characterType,

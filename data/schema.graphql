@@ -42,5 +42,8 @@ type Viewer {
   characters(
     # Search String to look up characters
     search: String
+
+    # Number of characters to return
+    limit: Int
   ): [Character]
 }
