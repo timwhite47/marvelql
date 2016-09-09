@@ -29,13 +29,6 @@ type Query {
     id: ID!
   ): Node
   viewer: Viewer
-}
-
-type Viewer {
-  characters(
-    # Search String to look up characters
-    search: String
-  ): [Character]
   character(
     # Name of character
     name: String
@@ -43,4 +36,11 @@ type Viewer {
     # Marvel API Character ID
     id: String
   ): Character
+}
+
+type Viewer {
+  characters(
+    # Search String to look up characters
+    search: String
+  ): [Character]
 }

@@ -23,6 +23,7 @@ import {
 } from 'graphql-relay';
 
 const marvelApi = require('marvel-api');
+const LIMIT = 100;
 
 const marvel = marvelApi.createClient({
   publicKey: MARVEL_API_PUBLIC_KEY,
@@ -32,7 +33,7 @@ const marvel = marvelApi.createClient({
 const findByName = (name) => marvel.characters.findByName(name)
   .then((response) => response.data[0]);
 
-const findAll = () => marvel.characters.findAll()
+const findAll = () => marvel.characters.findAll(LIMIT)
   .then((response) => response.data);
 
 const findById = (id) => marvel.characters.find(id)
@@ -100,6 +101,17 @@ const viewerType = new GraphQLObjectType({
         return findAll();
       },
     },
+  })
+});
+
+const queryType = new GraphQLObjectType({
+  name: 'Query',
+  fields: () => ({
+    node: nodeField,
+    viewer: {
+      type: viewerType,
+      resolve: () => ({})
+    },
     character: {
       type: characterType,
       args: {
@@ -119,17 +131,6 @@ const viewerType = new GraphQLObjectType({
 
         return findByName(name);
       },
-    },
-  })
-});
-
-const queryType = new GraphQLObjectType({
-  name: 'Query',
-  fields: () => ({
-    node: nodeField,
-    viewer: {
-      type: viewerType,
-      resolve: () => ({})
     },
   }),
 });

@@ -50,6 +50,39 @@
               },
               "isDeprecated": false,
               "deprecationReason": null
+            },
+            {
+              "name": "character",
+              "description": null,
+              "args": [
+                {
+                  "name": "name",
+                  "description": "Name of character",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "id",
+                  "description": "Marvel API Character ID",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Character",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
             }
           ],
           "inputFields": null,
@@ -128,39 +161,6 @@
                   "name": "Character",
                   "ofType": null
                 }
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
-              "name": "character",
-              "description": null,
-              "args": [
-                {
-                  "name": "name",
-                  "description": "Name of character",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "id",
-                  "description": "Marvel API Character ID",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                }
-              ],
-              "type": {
-                "kind": "OBJECT",
-                "name": "Character",
-                "ofType": null
               },
               "isDeprecated": false,
               "deprecationReason": null
