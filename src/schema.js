@@ -38,6 +38,9 @@ const findAll = () => marvel.characters.findAll()
 const findById = (id) => marvel.characters.find(id)
   .then((response) => response.data[0]);
 
+const searchByName = (name) => marvel.characters.findNameStartsWith(name)
+  .then((response) => response.data);
+
 const { nodeInterface, nodeField } = nodeDefinitions(
     (globalId) => {
       const { id } = fromGlobalId(globalId);
@@ -83,18 +86,19 @@ const viewerType = new GraphQLObjectType({
   fields: () => ({
     characters: {
       type: new GraphQLList(characterType),
-      resolve: () => findAll(),
-    },
-  })
-});
+      args: {
+        search: {
+          description: 'Search String to look up characters',
+          type: GraphQLString,
+        },
+      },
+      resolve: (root, { search }) => {
+        if (search) {
+          return searchByName(search);
+        }
 
-const queryType = new GraphQLObjectType({
-  name: 'Query',
-  fields: () => ({
-    node: nodeField,
-    viewer: {
-      type: viewerType,
-      resolve: () => ({})
+        return findAll();
+      },
     },
     character: {
       type: characterType,
@@ -115,6 +119,17 @@ const queryType = new GraphQLObjectType({
 
         return findByName(name);
       },
+    },
+  })
+});
+
+const queryType = new GraphQLObjectType({
+  name: 'Query',
+  fields: () => ({
+    node: nodeField,
+    viewer: {
+      type: viewerType,
+      resolve: () => ({})
     },
   }),
 });

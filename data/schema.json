@@ -50,39 +50,6 @@
               },
               "isDeprecated": false,
               "deprecationReason": null
-            },
-            {
-              "name": "character",
-              "description": null,
-              "args": [
-                {
-                  "name": "name",
-                  "description": "Name of character",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
-                  "name": "id",
-                  "description": "Marvel API Character ID",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                }
-              ],
-              "type": {
-                "kind": "OBJECT",
-                "name": "Character",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
             }
           ],
           "inputFields": null,
@@ -141,7 +108,18 @@
             {
               "name": "characters",
               "description": null,
-              "args": [],
+              "args": [
+                {
+                  "name": "search",
+                  "description": "Search String to look up characters",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
               "type": {
                 "kind": "LIST",
                 "name": null,
@@ -153,10 +131,53 @@
               },
               "isDeprecated": false,
               "deprecationReason": null
+            },
+            {
+              "name": "character",
+              "description": null,
+              "args": [
+                {
+                  "name": "name",
+                  "description": "Name of character",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                },
+                {
+                  "name": "id",
+                  "description": "Marvel API Character ID",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Character",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
             }
           ],
           "inputFields": null,
           "interfaces": [],
+          "enumValues": null,
+          "possibleTypes": null
+        },
+        {
+          "kind": "SCALAR",
+          "name": "String",
+          "description": "The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.",
+          "fields": null,
+          "inputFields": null,
+          "interfaces": null,
           "enumValues": null,
           "possibleTypes": null
         },
@@ -250,16 +271,6 @@
               "ofType": null
             }
           ],
-          "enumValues": null,
-          "possibleTypes": null
-        },
-        {
-          "kind": "SCALAR",
-          "name": "String",
-          "description": "The `String` scalar type represents textual data, represented as UTF-8 character sequences. The String type is most often used by GraphQL to represent free-form human-readable text.",
-          "fields": null,
-          "inputFields": null,
-          "interfaces": null,
           "enumValues": null,
           "possibleTypes": null
         },
