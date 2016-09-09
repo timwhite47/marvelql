@@ -1,11 +1,4 @@
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
-
-const {
-  MARVEL_API_PUBLIC_KEY,
-  MARVEL_API_PRIVATE_KEY,
-} = process.env;
+import Character from './character';
 
 import {
   GraphQLSchema,
@@ -17,44 +10,15 @@ import {
   GraphQLNonNull,
 } from 'graphql';
 
-import Promise from 'bluebird';
-
 import {
   nodeDefinitions,
   fromGlobalId,
 } from 'graphql-relay';
 
-import {
-  range,
-  flatten,
-} from 'lodash';
-
-const marvelApi = require('marvel-api');
-const API_LIMIT = 100;
-
-const marvel = marvelApi.createClient({
-  publicKey: MARVEL_API_PUBLIC_KEY,
-  privateKey: MARVEL_API_PRIVATE_KEY,
-});
-
-const findByName = (name) => marvel.characters.findByName(name)
-  .then((response) => response.data[0]);
-
-const findAll = ({ limit }) => Promise.map(range(limit / API_LIMIT), (offset) => marvel
-  .characters.findAll(API_LIMIT, offset)
-  .then((response) => response.data))
-  .then((responses) => flatten(responses).slice(0, limit));
-
-const findById = (id) => marvel.characters.find(id)
-  .then((response) => response.data[0]);
-
-const searchByName = (name) => marvel.characters.findNameStartsWith(name)
-  .then((response) => response.data);
-
 const { nodeInterface, nodeField } = nodeDefinitions(
     (globalId) => {
       const { id } = fromGlobalId(globalId);
-      return findById(id);
+      return Character.find(id);
     },
     () => characterType,
   );
@@ -108,10 +72,10 @@ const viewerType = new GraphQLObjectType({
       },
       resolve: (root, { search, limit }) => {
         if (search) {
-          return searchByName(search);
+          return Character.search(search);
         }
 
-        return findAll({ limit });
+        return Character.all({ limit });
       },
     },
   }),
@@ -128,22 +92,12 @@ const queryType = new GraphQLObjectType({
     character: {
       type: characterType,
       args: {
-        name: {
-          description: 'Name of character',
-          type: GraphQLString,
-        },
         id: {
           description: 'Marvel API Character ID',
           type: GraphQLString,
         },
       },
-      resolve: (root, { name, id }) => {
-        if (id) {
-          return findById(id);
-        }
-
-        return findByName(name);
-      },
+      resolve: (root, { id }) => Character.find(id),
     },
   }),
 });

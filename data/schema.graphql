@@ -30,9 +30,6 @@ type Query {
   ): Node
   viewer: Viewer
   character(
-    # Name of character
-    name: String
-
     # Marvel API Character ID
     id: String
   ): Character

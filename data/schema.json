@@ -56,16 +56,6 @@
               "description": null,
               "args": [
                 {
-                  "name": "name",
-                  "description": "Name of character",
-                  "type": {
-                    "kind": "SCALAR",
-                    "name": "String",
-                    "ofType": null
-                  },
-                  "defaultValue": null
-                },
-                {
                   "name": "id",
                   "description": "Marvel API Character ID",
                   "type": {
