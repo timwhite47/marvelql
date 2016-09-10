@@ -14,6 +14,42 @@ type Character implements Node {
   # The canonical URL identifier for this resource
   resourceURI: String
   thumbnail: String
+
+  # Comics the character appears in.
+  comics: [Comic]
+}
+
+type Comic {
+  # Marvel API ID
+  id: ID
+
+  # Digital Comic ID
+  digitalId: String
+
+  # The canonical id of the comic
+  title: String
+
+  # The number of the issue in the series (will generally be 0 for collection formats)
+  issueNumber: Int
+
+  #  The publication format of the comic e.g. comic, hardcover, trade paperback.
+  format: String
+
+  # Series that comic belongs to.
+  series: Series
+
+  # A list of promotional images associated with this comic.
+  images: [Image]
+
+  # The representative image for this comic
+  thumbnail: Image
+
+  # A set of public web site URLs for the resource
+  urls: [URL]
+}
+
+type Image {
+  url: String
 }
 
 # An object with an ID
@@ -33,6 +69,22 @@ type Query {
     # Marvel API Character ID
     id: String
   ): Character
+}
+
+type Series {
+  # The id of the series
+  id: String
+
+  # The name of the series
+  name: String
+}
+
+type URL {
+  # A text identifier for the URL
+  type: String
+
+  # A full URL (including scheme, domain, and path)
+  url: String
 }
 
 type Viewer {
