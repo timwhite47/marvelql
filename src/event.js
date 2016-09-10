@@ -1,13 +1,15 @@
-import marvel from './marvel';
+import marvel, { cacheFetch } from './marvel';
 import { parseCollection, parseObject } from './api_helpers';
 
 export default class Event {
   static all() {
-    return marvel.events.findAll().then(parseCollection);
+    const cacheKey = 'events:all';
+    return cacheFetch(cacheKey, () => marvel.events.findAll().then(parseCollection));
   }
 
   static find(id) {
-    return marvel.events.find(id).then(parseObject);
+    const cacheKey = `events:${id}`;
+    return cacheFetch(cacheKey, () => marvel.events.find(id).then(parseObject));
   }
 
   constructor(data) {
@@ -40,7 +42,8 @@ export default class Event {
 
   _fetch(target) {
     const { id } = this.data;
-    return marvel.events[target](id);
+    const cacheKey = `events:${id}:${target}`;
+    return cacheFetch(cacheKey, () => marvel.events[target](id));
   }
 
   _fetchCollection(target) {

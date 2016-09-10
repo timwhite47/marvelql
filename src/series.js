@@ -1,12 +1,15 @@
-import marvel from './marvel';
+import marvel, { cacheFetch } from './marvel';
 import { parseCollection, parseObject } from './api_helpers';
 
 export default class Series {
   static all() {
-    return marvel.series.findAll().then(parseCollection);
+    const cacheKey = 'events:all';
+    return cacheFetch(cacheKey, () => marvel.series.findAll().then(parseCollection));
   }
 
   static find(id) {
+    const cacheKey = `events:${id}`;
+    return cacheFetch(cacheKey, () => marvel.series.find(id).then(parseObject));
     return marvel.series.find(id).then(parseObject);
   }
 

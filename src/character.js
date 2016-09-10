@@ -1,4 +1,4 @@
-import marvel from './marvel';
+import marvel, { cacheFetch } from './marvel';
 import Promise from 'bluebird';
 
 import {
@@ -15,15 +15,23 @@ class Character {
   }
 
   static find(id) {
-    return marvel.characters.find(id).then(parseObject);
+    return cacheFetch(`characters:${id}`,
+      () => marvel.characters.find(id).then(parseObject)
+    );
   }
 
   static all({ limit }) {
     limit = limit || API_LIMIT;
-    return Promise.map(range(limit / API_LIMIT), (offset) => marvel
-      .characters.findAll(API_LIMIT, offset)
-      .then(parseCollection))
-      .then((responses) => flatten(responses).slice(0, limit));
+
+    return Promise.map(range(limit / API_LIMIT), (offset) => {
+      const cacheKey = `characters:all:${API_LIMIT}:${offset}`;
+
+      return cacheFetch(cacheKey, () => {
+        return marvel
+        .characters.findAll(API_LIMIT, offset)
+        .then(parseCollection);
+      });
+    }).then((responses) => flatten(responses).slice(0, limit));
   }
 
   constructor(data) {
@@ -48,7 +56,9 @@ class Character {
 
   _fetch(target) {
     const { id } = this.data;
-    return marvel.characters[target](id);
+    const cacheKey = `characters:${id}:${target}`;
+
+    return cacheFetch(cacheKey, () => marvel.characters[target](id));
   }
 
   _fetchCollection(target) {
