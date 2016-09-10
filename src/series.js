@@ -1,34 +1,34 @@
 import marvel from './marvel';
 import { parseCollection, parseObject } from './api_helpers';
 
-export default class Comic {
+export default class Series {
   static all() {
-    return marvel.comics.findAll().then(parseCollection);
+    return marvel.series.findAll().then(parseCollection);
   }
 
   static find(id) {
-    return marvel.comics.find(id).then(parseObject);
+    return marvel.series.find(id).then(parseObject);
   }
 
   constructor(data) {
     this.data = data;
   }
 
+  comics() {
+    return this._fetchCollection('comics');
+  }
+
+  events() {
+    return this._fetchCollection('events');
+  }
+
   stories() {
     return this._fetchCollection('stories');
   }
 
-  characters() {
-    return this._fetchCollection('characters');
-  }
-
-  series() {
-    return this._fetchObject('series');
-  }
-
   _fetch(target) {
     const { id } = this.data;
-    return marvel.comics[target](id);
+    return marvel.series[target](id);
   }
 
   _fetchCollection(target) {
