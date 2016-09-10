@@ -342,6 +342,16 @@ const queryType = new GraphQLObjectType({
       },
       resolve: (root, { id }) => Character.find(id),
     },
+    comic: {
+      type: comicType,
+      args: {
+        id: {
+          description: 'Marvel API Comic ID',
+          type: GraphQLString,
+        },
+      },
+      resolve: (root, { id }) => Comic.find(id),
+    }
   }),
 });
 

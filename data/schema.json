@@ -73,6 +73,29 @@
               },
               "isDeprecated": false,
               "deprecationReason": null
+            },
+            {
+              "name": "comic",
+              "description": null,
+              "args": [
+                {
+                  "name": "id",
+                  "description": "Marvel API Comic ID",
+                  "type": {
+                    "kind": "SCALAR",
+                    "name": "String",
+                    "ofType": null
+                  },
+                  "defaultValue": null
+                }
+              ],
+              "type": {
+                "kind": "OBJECT",
+                "name": "Comic",
+                "ofType": null
+              },
+              "isDeprecated": false,
+              "deprecationReason": null
             }
           ],
           "inputFields": null,
@@ -508,18 +531,6 @@
               "deprecationReason": null
             },
             {
-              "name": "stories",
-              "description": "",
-              "args": [],
-              "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
-              },
-              "isDeprecated": false,
-              "deprecationReason": null
-            },
-            {
               "name": "events",
               "description": "",
               "args": [],
@@ -697,9 +708,13 @@
               "description": "Comics included in this event.",
               "args": [],
               "type": {
-                "kind": "OBJECT",
-                "name": "Comic",
-                "ofType": null
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Comic",
+                  "ofType": null
+                }
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -709,9 +724,13 @@
               "description": "Characters involved in event",
               "args": [],
               "type": {
-                "kind": "OBJECT",
-                "name": "Character",
-                "ofType": null
+                "kind": "LIST",
+                "name": null,
+                "ofType": {
+                  "kind": "OBJECT",
+                  "name": "Character",
+                  "ofType": null
+                }
               },
               "isDeprecated": false,
               "deprecationReason": null
