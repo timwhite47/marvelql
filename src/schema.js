@@ -1,6 +1,7 @@
 import Character from './character';
 import Comic from './comic';
 import Series from './series';
+import Event from './event';
 
 import {
   GraphQLSchema,
@@ -31,26 +32,7 @@ const { nodeInterface, nodeField } = nodeDefinitions(
 
 const parseResourceURI = (resourceURI) => last(resourceURI.split('/'));
 
-
-// id (int, optional): The unique ID of the series resource.,
-// title (string, optional): The canonical title of the series.,
-// description (string, optional): A description of the series.,
-// resourceURI (string, optional): The canonical URL identifier for this resource.,
-// urls (Array[Url], optional): A set of public web site URLs for the resource.,
-// startYear (int, optional): The first year of publication for the series.,
-// endYear (int, optional): The last year of publication for the series (conventionally, 2099 for ongoing series) .,
-// rating (string, optional): The age-appropriateness rating for the series.,
-// modified (Date, optional): The date the resource was most recently modified.,
-// thumbnail (Image, optional): The representative image for this series.,
-// comics (ComicList, optional): A resource list containing comics in this series.,
-// stories (StoryList, optional): A resource list containing stories which occur in comics in this series.,
-// events (EventList, optional): A resource list containing events which take place in comics in this series.,
-// characters (CharacterList, optional): A resource list containing characters which appear in comics in this series.,
-// creators (CreatorList, optional): A resource list of creators whose work appears in comics in this series.,
-// next (SeriesSummary, optional): A summary representation of the series which follows this series.,
-// previous (SeriesSummary, optional): A summary representation of the series which preceded this series.
-
-const seriresType = new GraphQLObjectType({
+const seriesType = new GraphQLObjectType({
   name: 'Series',
   fields: () => ({
     id: {
@@ -97,23 +79,22 @@ const seriresType = new GraphQLObjectType({
         return series.comics();
       },
     },
-    stories: {
-      type: GraphQLString,
-      description: '',
-      resolve: (data) => {
-        const series = new Series(data);
-        return series.stories();
-      },
-    },
-
-    // events: {
+    // stories: {
     //   type: GraphQLString,
     //   description: '',
     //   resolve: (data) => {
     //     const series = new Series(data);
-    //     return series.events();
-    //   }
+    //     return series.stories();
+    //   },
     // },
+    events: {
+      type: eventType,
+      description: '',
+      resolve: (data) => {
+        const series = new Series(data);
+        return series.events();
+      }
+    },
   }),
 });
 
@@ -165,7 +146,7 @@ const comicType = new GraphQLObjectType({
       type: GraphQLString,
     },
     series: {
-      type: seriresType,
+      type: seriesType,
       description: 'Series that comic belongs to.',
       resolve: (data) => Series.find(parseResourceURI(data.series.resourceURI)),
     },
@@ -187,6 +168,62 @@ const comicType = new GraphQLObjectType({
       resolve: (data) => {
         const comic = new Comic(data);
         return comic.characters();
+      },
+    },
+  }),
+});
+
+const eventType = new GraphQLObjectType({
+  name: 'Event',
+  fields: () => ({
+    id: {
+      description: 'Marvel API ID',
+      type: new GraphQLNonNull(GraphQLID),
+    },
+    title: {
+      description: 'Title of Event',
+      type: GraphQLString,
+    },
+    description: {
+      description: 'Description of Event',
+      type: GraphQLString,
+    },
+    urls: {
+      type: new GraphQLList(urlType),
+      description: 'A set of public web site URLs for the event',
+    },
+    start: {
+      description: 'Start Date of Event',
+      type: GraphQLString,
+    },
+    end: {
+      description: 'End Date of Event',
+      type: GraphQLString,
+    },
+    thumbnail: {
+      description: 'The representative image for this event',
+      type: imageType,
+    },
+    comics: {
+      description: 'Comics included in this event.',
+      type: new GraphQLList(comicType),
+      resolve: (data) => {
+        const event = new Event(data);
+        return event.comics();
+      },
+    },
+
+    // stories: {
+    //   description: 'Stories included in this event.',
+    //   type: storyType
+    // }
+
+    characters: {
+      type: new GraphQLList(characterType),
+      description: 'Characters involved in event',
+      resolve: (data) => {
+        const event = new Event(data);
+        return event.characters();
       },
     },
   }),
@@ -226,7 +263,22 @@ const characterType = new GraphQLObjectType({
       resolve: (response) => {
         const character = new Character(response);
 
-        return character.fetchComics();
+        return character.comics();
+      },
+    },
+    series: {
+      type: new GraphQLList(seriesType),
+      description: 'Series that the character is in.',
+      resolve(response) {
+        const character = new Character(response);
+        return character.series();
+      },
+    },
+    events: {
+      type: new GraphQLList(eventType),
+      resolve(response) {
+        const character = new Character(response);
+        return character.events();
       },
     },
   }),
@@ -241,8 +293,13 @@ const viewerType = new GraphQLObjectType({
       resolve: () => Comic.all(),
     },
     series: {
-      type: new GraphQLList(seriresType),
+      type: new GraphQLList(seriesType),
       resolve: () => Series.all(),
+    },
+
+    events: {
+      type: new GraphQLList(eventType),
+      resolve: () => Event.all(),
     },
     characters: {
       type: new GraphQLList(characterType),

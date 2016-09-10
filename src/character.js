@@ -30,9 +30,33 @@ class Character {
     this.data = data;
   }
 
-  fetchComics() {
-    return marvel.characters.comics(this.data.id)
-      .then(parseCollection);
+  comics() {
+    return this._fetchCollection('comics');
+  }
+
+  events() {
+    return this._fetchCollection('events');
+  }
+
+  series() {
+    return this._fetchCollection('series');
+  }
+
+  stories() {
+    return this._fetchCollection('stories');
+  }
+
+  _fetch(target) {
+    const { id } = this.data;
+    return marvel.characters[target](id);
+  }
+
+  _fetchCollection(target) {
+    return this._fetch(target).then(parseCollection);
+  }
+
+  _fetchObject(target) {
+    return this._fetch(target).then(parseObject);
   }
 }
 

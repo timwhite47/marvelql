@@ -17,6 +17,10 @@ type Character implements Node {
 
   # Comics the character appears in.
   comics: [Comic]
+
+  # Series that the character is in.
+  series: [Series]
+  events: [Event]
 }
 
 type Comic {
@@ -49,6 +53,35 @@ type Comic {
 
   # Characters appearing in comic
   characters: [Character]
+}
+
+type Event {
+  # Marvel API ID
+  id: ID!
+
+  # Title of Event
+  title: String
+
+  # Description of Event
+  description: String
+
+  # A set of public web site URLs for the event
+  urls: [URL]
+
+  # Start Date of Event
+  start: String
+
+  # End Date of Event
+  end: String
+
+  # The representative image for this event
+  thumbnail: Image
+
+  # Comics included in this event.
+  comics: Comic
+
+  # Characters involved in event
+  characters: Character
 }
 
 type Image {
@@ -103,6 +136,7 @@ type Series {
   # A resource list containing comics in this series
   comics: String
   stories: String
+  events: Event
 }
 
 type URL {
@@ -116,6 +150,7 @@ type URL {
 type Viewer {
   comics: [Comic]
   series: [Series]
+  events: [Event]
   characters(
     # Search String to look up characters
     search: String
