@@ -46,6 +46,9 @@ type Comic {
 
   # A set of public web site URLs for the resource
   urls: [URL]
+
+  # Characters appearing in comic
+  characters: [Character]
 }
 
 type Image {
@@ -88,6 +91,7 @@ type URL {
 }
 
 type Viewer {
+  comics: [Comic]
   characters(
     # Search String to look up characters
     search: String

@@ -1,7 +1,4 @@
-if (process.env.NODE_ENV !== 'production') {
-  require('dotenv').config();
-}
-
+import marvel from './marvel';
 import Promise from 'bluebird';
 
 import {
@@ -9,26 +6,8 @@ import {
   flatten,
 } from 'lodash';
 
-const marvelApi = require('marvel-api');
 const API_LIMIT = 25;
-
-const {
-  MARVEL_API_PUBLIC_KEY,
-  MARVEL_API_PRIVATE_KEY,
-} = process.env;
-
-const marvel = marvelApi.createClient({
-  publicKey: MARVEL_API_PUBLIC_KEY,
-  privateKey: MARVEL_API_PRIVATE_KEY,
-});
-
-function parseCollection(response) {
-  return response.data;
-}
-
-function parseObject(response) {
-  return response.data[0];
-}
+import { parseCollection, parseObject } from './api_helpers';
 
 class Character {
   static search(input) {
