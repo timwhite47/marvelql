@@ -109,6 +109,10 @@ type Query {
     # Marvel API Comic ID
     id: String
   ): Comic
+  series(
+    # Marvel API Series ID
+    id: String
+  ): Series
 }
 
 type Series {
@@ -138,8 +142,8 @@ type Series {
   thumbnail: Image
 
   # A resource list containing comics in this series
-  comics: String
-  events: Event
+  comics: [Comic]
+  events: [Event]
 }
 
 type URL {

@@ -72,7 +72,7 @@ const seriesType = new GraphQLObjectType({
       description: 'The representative image for this series',
     },
     comics: {
-      type: GraphQLString,
+      type: new GraphQLList(comicType),
       description: 'A resource list containing comics in this series',
       resolve: (data) => {
         const series = new Series(data);
@@ -88,7 +88,7 @@ const seriesType = new GraphQLObjectType({
     //   },
     // },
     events: {
-      type: eventType,
+      type: new GraphQLList(eventType),
       description: '',
       resolve: (data) => {
         const series = new Series(data);
@@ -351,7 +351,17 @@ const queryType = new GraphQLObjectType({
         },
       },
       resolve: (root, { id }) => Comic.find(id),
-    }
+    },
+    series: {
+      type: seriesType,
+      args: {
+        id: {
+          description: 'Marvel API Series ID',
+          type: GraphQLString,
+        },
+      },
+      resolve: (root, { id }) => Series.find(id),
+    },
   }),
 });
 
