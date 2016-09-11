@@ -26,25 +26,28 @@ import {
   connectionArgs,
   connectionDefinitions,
   connectionFromPromisedArray,
+  globalIdField,
 } from 'graphql-relay';
 
 const { nodeInterface, nodeField } = nodeDefinitions(
     (globalId) => {
-      const { id } = fromGlobalId(globalId);
+      const { id, type } = fromGlobalId(globalId);
+      console.log('Resolved from Global ID', id, type);
       return Character.find(id);
     },
-    () => characterType,
+    (obj) => {
+      console.log('Resolving Type of object', obj);
+      return characterType;
+    },
   );
+
 
 const parseResourceURI = (resourceURI) => last(resourceURI.split('/'));
 
 const seriesType = new GraphQLObjectType({
   name: 'Series',
   fields: () => ({
-    id: {
-      description: 'The id of the series',
-      type: GraphQLString,
-    },
+    id: globalIdField(),
     title: {
       description: 'The name of the series',
       type: GraphQLString,
@@ -133,10 +136,7 @@ const urlType = new GraphQLObjectType({
 const comicType = new GraphQLObjectType({
   name: 'Comic',
   fields: () => ({
-    id: {
-      description: 'Marvel API ID',
-      type: GraphQLID,
-    },
+    id: globalIdField(),
     digitalId: {
       description: 'Digital Comic ID',
       type: GraphQLString,
@@ -185,10 +185,7 @@ const comicType = new GraphQLObjectType({
 const eventType = new GraphQLObjectType({
   name: 'Event',
   fields: () => ({
-    id: {
-      description: 'Marvel API ID',
-      type: new GraphQLNonNull(GraphQLID),
-    },
+    id: globalIdField(),
     title: {
       description: 'Title of Event',
       type: GraphQLString,
@@ -243,10 +240,7 @@ const eventType = new GraphQLObjectType({
 const characterType = new GraphQLObjectType({
   name: 'Character',
   fields: () => ({
-    id: {
-      description: 'Marvel API ID',
-      type: new GraphQLNonNull(GraphQLID),
-    },
+    id: globalIdField(),
     name: {
       description: 'Name of character',
       type: GraphQLString,

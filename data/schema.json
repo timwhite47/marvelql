@@ -618,12 +618,16 @@
           "fields": [
             {
               "name": "id",
-              "description": "Marvel API ID",
+              "description": "The ID of an object",
               "args": [],
               "type": {
-                "kind": "SCALAR",
-                "name": "ID",
-                "ofType": null
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -808,12 +812,16 @@
           "fields": [
             {
               "name": "id",
-              "description": "The id of the series",
+              "description": "The ID of an object",
               "args": [],
               "type": {
-                "kind": "SCALAR",
-                "name": "String",
-                "ofType": null
+                "kind": "NON_NULL",
+                "name": null,
+                "ofType": {
+                  "kind": "SCALAR",
+                  "name": "ID",
+                  "ofType": null
+                }
               },
               "isDeprecated": false,
               "deprecationReason": null
@@ -1197,7 +1205,7 @@
           "fields": [
             {
               "name": "id",
-              "description": "Marvel API ID",
+              "description": "The ID of an object",
               "args": [],
               "type": {
                 "kind": "NON_NULL",
@@ -1508,7 +1516,7 @@
           "fields": [
             {
               "name": "id",
-              "description": "Marvel API ID",
+              "description": "The ID of an object",
               "args": [],
               "type": {
                 "kind": "NON_NULL",

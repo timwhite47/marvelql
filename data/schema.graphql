@@ -1,5 +1,5 @@
 type Character implements Node {
-  # Marvel API ID
+  # The ID of an object
   id: ID!
 
   # Name of character
@@ -66,8 +66,8 @@ type CharacterEdge {
 }
 
 type Comic {
-  # Marvel API ID
-  id: ID
+  # The ID of an object
+  id: ID!
 
   # Digital Comic ID
   digitalId: String
@@ -124,7 +124,7 @@ type ComicEdge {
 }
 
 type Event {
-  # Marvel API ID
+  # The ID of an object
   id: ID!
 
   # Title of Event
@@ -233,8 +233,8 @@ type Query {
 }
 
 type Series {
-  # The id of the series
-  id: String
+  # The ID of an object
+  id: ID!
 
   # The name of the series
   title: String
