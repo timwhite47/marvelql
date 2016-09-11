@@ -35,19 +35,22 @@ export const cacheFetch = (key, fetcher) => {
   return redisCache.wrap(key, fetcher);
 };
 
-export const cacheCollection = (key, fetcher) => {
-  let offset = 0;
+export const cacheCollection = (key, fetcher, expectedLimit) => {
+  console.log('expectedLimit', expectedLimit);
+  return cacheFetch(key, () => fetcher({ limit: 1, offset: 0 }))
+    .then(({ meta }) => {
+      let pages;
 
-  const limit = API_LIMIT;
-  return cacheFetch(key, () => fetcher({ limit, offset }).then(({ meta }) => {
+      if (expectedLimit) {
+        pages = range(expectedLimit / API_LIMIT);
+      } else {
+        pages = range(meta.total / API_LIMIT);
+      }
 
-    const pages = range(meta.total / API_LIMIT);
+      return Promise.map(pages, (pageNumber) => {
+        const offset = pageNumber * API_LIMIT;
 
-    return Promise.map(pages, (pageNumber) => {
-      offset = pageNumber * API_LIMIT;
-
-      return fetcher({ offset, limit }).then(parseCollection);
+        return cacheFetch(`${key}:${offset}`, () => fetcher({ offset, limit: API_LIMIT }).then(parseCollection));
+      }).then((response) => flatten(response));
     });
-  })).then((response) => flatten(response));
-
 };

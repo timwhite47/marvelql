@@ -268,7 +268,7 @@ const characterType = new GraphQLObjectType({
       args: connectionArgs,
       resolve: (response, args) => {
         const character = new Character(response);
-        return connectionFromPromisedArray(character.comics(), args);
+        return connectionFromPromisedArray(character.comics(args), args);
       },
     },
     series: {
@@ -303,13 +303,13 @@ const viewerType = new GraphQLObjectType({
     series: {
       type: seriesConnection,
       args: connectionArgs,
-      resolve: () => Series.all(),
+      resolve: (root, args) => Series.all(args),
     },
 
     events: {
       type: eventConnection,
       args: connectionArgs,
-      resolve: () => Event.all(),
+      resolve: (root, args) => Event.all(args),
     },
 
     characters: {
@@ -325,7 +325,7 @@ const viewerType = new GraphQLObjectType({
           return connectionFromPromisedArray(Character.search(args.search), args);
         }
 
-        return connectionFromPromisedArray(Character.all(), args);
+        return connectionFromPromisedArray(Character.all(args), args);
       },
     },
   }),
@@ -347,7 +347,7 @@ const queryType = new GraphQLObjectType({
           type: GraphQLString,
         },
       },
-      resolve: (root, { id }) => Character.find(id),
+      resolve: (root, { id }) => Character.find(fromGlobalId(id).id),
     },
     comic: {
       type: comicType,
@@ -357,7 +357,7 @@ const queryType = new GraphQLObjectType({
           type: GraphQLString,
         },
       },
-      resolve: (root, { id }) => Comic.find(id),
+      resolve: (root, { id }) => Comic.find(fromGlobalId(id).id),
     },
     series: {
       type: seriesType,
@@ -367,7 +367,7 @@ const queryType = new GraphQLObjectType({
           type: GraphQLString,
         },
       },
-      resolve: (root, { id }) => Series.find(id),
+      resolve: (root, { id }) => Series.find(fromGlobalId(id).id),
     },
   }),
 });
