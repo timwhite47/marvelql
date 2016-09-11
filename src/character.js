@@ -1,12 +1,8 @@
-import marvel, { cacheFetch } from './marvel';
+import marvel, { cacheFetch, cacheCollection } from './marvel';
 import Promise from 'bluebird';
+import { range, flatten } from 'lodash';
 
-import {
-  range,
-  flatten,
-} from 'lodash';
-
-const API_LIMIT = 25;
+const API_LIMIT = 100;
 import { parseCollection, parseObject } from './api_helpers';
 
 class Character {
@@ -20,18 +16,11 @@ class Character {
     );
   }
 
-  static all({ limit }) {
-    limit = limit || API_LIMIT;
-
-    return Promise.map(range(limit / API_LIMIT), (offset) => {
-      const cacheKey = `characters:all:${API_LIMIT}:${offset}`;
-
-      return cacheFetch(cacheKey, () => {
-        return marvel
-        .characters.findAll(API_LIMIT, offset)
-        .then(parseCollection);
-      });
-    }).then((responses) => flatten(responses).slice(0, limit));
+  static all() {
+    const cacheKey = `characters:all:${API_LIMIT}`;
+    return cacheCollection(cacheKey, ({ limit, offset }) =>
+      marvel.characters.findAll(limit, offset)
+    );
   }
 
   constructor(data) {
@@ -62,7 +51,12 @@ class Character {
   }
 
   _fetchCollection(target) {
-    return this._fetch(target).then(parseCollection);
+    const { id } = this.data;
+    const cacheKey = `characters:${id}:${target}`;
+
+    return cacheCollection(cacheKey, ({ limit, offset }) =>
+      marvel.characters[target](id, limit, offset)
+    );
   }
 
   _fetchObject(target) {

@@ -1,3 +1,5 @@
+/* eslint-disable no-use-before-define */
+
 import Character from './character';
 import Comic from './comic';
 import Series from './series';
@@ -15,11 +17,15 @@ import {
 
 import {
   last,
+  merge,
 } from 'lodash';
 
 import {
   nodeDefinitions,
   fromGlobalId,
+  connectionArgs,
+  connectionDefinitions,
+  connectionFromPromisedArray,
 } from 'graphql-relay';
 
 const { nodeInterface, nodeField } = nodeDefinitions(
@@ -48,7 +54,7 @@ const seriesType = new GraphQLObjectType({
       type: GraphQLString,
     },
     urls: {
-      type: urlType,
+      type: new GraphQLList(urlType),
       description: 'A set of public web site URLs for the resource',
     },
     startYear: {
@@ -72,7 +78,8 @@ const seriesType = new GraphQLObjectType({
       description: 'The representative image for this series',
     },
     comics: {
-      type: new GraphQLList(comicType),
+      type: comicConnection,
+      args: connectionArgs,
       description: 'A resource list containing comics in this series',
       resolve: (data) => {
         const series = new Series(data);
@@ -88,12 +95,13 @@ const seriesType = new GraphQLObjectType({
     //   },
     // },
     events: {
-      type: new GraphQLList(eventType),
-      description: '',
+      type: eventConnection,
+      args: connectionArgs,
+      description: 'Events the character is involved in',
       resolve: (data) => {
         const series = new Series(data);
         return series.events();
-      }
+      },
     },
   }),
 });
@@ -163,7 +171,8 @@ const comicType = new GraphQLObjectType({
       description: 'A set of public web site URLs for the resource',
     },
     characters: {
-      type: new GraphQLList(characterType),
+      type: characterConnection,
+      args: connectionArgs,
       description: 'Characters appearing in comic',
       resolve: (data) => {
         const comic = new Comic(data);
@@ -206,7 +215,8 @@ const eventType = new GraphQLObjectType({
     },
     comics: {
       description: 'Comics included in this event.',
-      type: new GraphQLList(comicType),
+      type: comicConnection,
+      args: connectionArgs,
       resolve: (data) => {
         const event = new Event(data);
         return event.comics();
@@ -219,7 +229,8 @@ const eventType = new GraphQLObjectType({
     // }
 
     characters: {
-      type: new GraphQLList(characterType),
+      type: characterConnection,
+      args: connectionArgs,
       description: 'Characters involved in event',
       resolve: (data) => {
         const event = new Event(data);
@@ -259,26 +270,28 @@ const characterType = new GraphQLObjectType({
     },
     comics: {
       description: 'Comics the character appears in.',
-      type: new GraphQLList(comicType),
-      resolve: (response) => {
+      type: comicConnection,
+      args: connectionArgs,
+      resolve: (response, args) => {
         const character = new Character(response);
-
-        return character.comics();
+        return connectionFromPromisedArray(character.comics(), args);
       },
     },
     series: {
-      type: new GraphQLList(seriesType),
+      type: seriesConnection,
+      args: connectionArgs,
       description: 'Series that the character is in.',
-      resolve(response) {
+      resolve: (response, args) => {
         const character = new Character(response);
-        return character.series();
+        return connectionFromPromisedArray(character.series(), args);
       },
     },
     events: {
-      type: new GraphQLList(eventType),
-      resolve(response) {
+      type: eventConnection,
+      args: connectionArgs,
+      resolve(response, args) {
         const character = new Character(response);
-        return character.events();
+        return connectionFromPromisedArray(character.events(), args);
       },
     },
   }),
@@ -289,36 +302,36 @@ const viewerType = new GraphQLObjectType({
   name: 'Viewer',
   fields: () => ({
     comics: {
-      type: new GraphQLList(comicType),
-      resolve: () => Comic.all(),
+      type: comicConnection,
+      args: connectionArgs,
+      resolve: (root, args) => Comic.all(args),
     },
     series: {
-      type: new GraphQLList(seriesType),
+      type: seriesConnection,
+      args: connectionArgs,
       resolve: () => Series.all(),
     },
 
     events: {
-      type: new GraphQLList(eventType),
+      type: eventConnection,
+      args: connectionArgs,
       resolve: () => Event.all(),
     },
+
     characters: {
-      type: new GraphQLList(characterType),
-      args: {
+      type: characterConnection,
+      args: merge(connectionArgs, {
         search: {
           description: 'Search String to look up characters',
           type: GraphQLString,
         },
-        limit: {
-          description: 'Number of characters to return',
-          type: GraphQLInt,
-        },
-      },
-      resolve: (root, { search, limit }) => {
-        if (search) {
-          return Character.search(search);
+      }),
+      resolve: (root, args) => {
+        if (args.search) {
+          return connectionFromPromisedArray(Character.search(args.search), args);
         }
 
-        return Character.all({ limit });
+        return connectionFromPromisedArray(Character.all(), args);
       },
     },
   }),
@@ -364,6 +377,11 @@ const queryType = new GraphQLObjectType({
     },
   }),
 });
+
+const { connectionType: comicConnection } = connectionDefinitions({ nodeType: comicType });
+const { connectionType: eventConnection } = connectionDefinitions({ nodeType: eventType });
+const { connectionType: characterConnection } = connectionDefinitions({ nodeType: characterType });
+const { connectionType: seriesConnection } = connectionDefinitions({ nodeType: seriesType });
 
 export default new GraphQLSchema({
   query: queryType,

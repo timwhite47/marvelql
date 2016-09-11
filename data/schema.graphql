@@ -16,11 +16,53 @@ type Character implements Node {
   thumbnail: String
 
   # Comics the character appears in.
-  comics: [Comic]
+  comics(
+    after: String
+    first: Int
+    before: String
+    last: Int
+
+    # Search String to look up characters
+    search: String
+  ): ComicConnection
 
   # Series that the character is in.
-  series: [Series]
-  events: [Event]
+  series(
+    after: String
+    first: Int
+    before: String
+    last: Int
+
+    # Search String to look up characters
+    search: String
+  ): SeriesConnection
+  events(
+    after: String
+    first: Int
+    before: String
+    last: Int
+
+    # Search String to look up characters
+    search: String
+  ): EventConnection
+}
+
+# A connection to a list of items.
+type CharacterConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [CharacterEdge]
+}
+
+# An edge in a connection.
+type CharacterEdge {
+  # The item at the end of the edge
+  node: Character
+
+  # A cursor for use in pagination
+  cursor: String!
 }
 
 type Comic {
@@ -52,7 +94,33 @@ type Comic {
   urls: [URL]
 
   # Characters appearing in comic
-  characters: [Character]
+  characters(
+    after: String
+    first: Int
+    before: String
+    last: Int
+
+    # Search String to look up characters
+    search: String
+  ): CharacterConnection
+}
+
+# A connection to a list of items.
+type ComicConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [ComicEdge]
+}
+
+# An edge in a connection.
+type ComicEdge {
+  # The item at the end of the edge
+  node: Comic
+
+  # A cursor for use in pagination
+  cursor: String!
 }
 
 type Event {
@@ -78,10 +146,44 @@ type Event {
   thumbnail: Image
 
   # Comics included in this event.
-  comics: [Comic]
+  comics(
+    after: String
+    first: Int
+    before: String
+    last: Int
+
+    # Search String to look up characters
+    search: String
+  ): ComicConnection
 
   # Characters involved in event
-  characters: [Character]
+  characters(
+    after: String
+    first: Int
+    before: String
+    last: Int
+
+    # Search String to look up characters
+    search: String
+  ): CharacterConnection
+}
+
+# A connection to a list of items.
+type EventConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [EventEdge]
+}
+
+# An edge in a connection.
+type EventEdge {
+  # The item at the end of the edge
+  node: Event
+
+  # A cursor for use in pagination
+  cursor: String!
 }
 
 type Image {
@@ -92,6 +194,21 @@ type Image {
 interface Node {
   # The id of the object.
   id: ID!
+}
+
+# Information about pagination in a connection.
+type PageInfo {
+  # When paginating forwards, are there more items?
+  hasNextPage: Boolean!
+
+  # When paginating backwards, are there more items?
+  hasPreviousPage: Boolean!
+
+  # When paginating backwards, the cursor to continue.
+  startCursor: String
+
+  # When paginating forwards, the cursor to continue.
+  endCursor: String
 }
 
 type Query {
@@ -126,7 +243,7 @@ type Series {
   description: String
 
   # A set of public web site URLs for the resource
-  urls: URL
+  urls: [URL]
 
   # The first year of publication for the series
   startYear: Int
@@ -142,8 +259,44 @@ type Series {
   thumbnail: Image
 
   # A resource list containing comics in this series
-  comics: [Comic]
-  events: [Event]
+  comics(
+    after: String
+    first: Int
+    before: String
+    last: Int
+
+    # Search String to look up characters
+    search: String
+  ): ComicConnection
+
+  # Events the character is involved in
+  events(
+    after: String
+    first: Int
+    before: String
+    last: Int
+
+    # Search String to look up characters
+    search: String
+  ): EventConnection
+}
+
+# A connection to a list of items.
+type SeriesConnection {
+  # Information to aid in pagination.
+  pageInfo: PageInfo!
+
+  # A list of edges.
+  edges: [SeriesEdge]
+}
+
+# An edge in a connection.
+type SeriesEdge {
+  # The item at the end of the edge
+  node: Series
+
+  # A cursor for use in pagination
+  cursor: String!
 }
 
 type URL {
@@ -155,14 +308,40 @@ type URL {
 }
 
 type Viewer {
-  comics: [Comic]
-  series: [Series]
-  events: [Event]
-  characters(
+  comics(
+    after: String
+    first: Int
+    before: String
+    last: Int
+
     # Search String to look up characters
     search: String
+  ): ComicConnection
+  series(
+    after: String
+    first: Int
+    before: String
+    last: Int
 
-    # Number of characters to return
-    limit: Int
-  ): [Character]
+    # Search String to look up characters
+    search: String
+  ): SeriesConnection
+  events(
+    after: String
+    first: Int
+    before: String
+    last: Int
+
+    # Search String to look up characters
+    search: String
+  ): EventConnection
+  characters(
+    after: String
+    first: Int
+    before: String
+    last: Int
+
+    # Search String to look up characters
+    search: String
+  ): CharacterConnection
 }

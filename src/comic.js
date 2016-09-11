@@ -1,10 +1,12 @@
-import marvel, { cacheFetch } from './marvel';
+import marvel, { cacheCollection, cacheFetch } from './marvel';
 import { parseCollection, parseObject } from './api_helpers';
 
 export default class Comic {
   static all() {
     const cacheKey = 'comics:all';
-    return cacheFetch(cacheKey, () => marvel.comics.findAll().then(parseCollection));
+    return cacheCollection(cacheKey, ({ limit, offset }) =>
+      marvel.comics.findAll(limit, offset)
+    );
   }
 
   static find(id) {
