@@ -18,12 +18,12 @@ export default class Comic {
     this.data = data;
   }
 
-  stories() {
-    return this._fetchCollection('stories');
+  stories(args) {
+    return this._fetchCollection('stories', args);
   }
 
-  characters() {
-    return this._fetchCollection('characters');
+  characters(args) {
+    return this._fetchCollection('characters', args);
   }
 
   series() {
@@ -32,14 +32,21 @@ export default class Comic {
 
   _fetch(target) {
     const { id } = this.data;
-    const cacheKey = `characters:${id}:${target}`;
+    const cacheKey = `comics:${id}:${target}`;
 
     return cacheFetch(cacheKey, () => marvel.comics[target](id));
   }
 
-  _fetchCollection(target) {
-    return this._fetch(target).then(parseCollection);
+  _fetchCollection(target, args) {
+    const { id } = this.data;
+    const cacheKey = `comics:${id}:${target}`;
+
+    return cacheCollection(cacheKey, ({ limit, offset }) =>
+      marvel.comics[target](id, limit, offset),
+      args.limit,
+    );
   }
+
 
   _fetchObject(target) {
     return this._fetch(target).then(parseObject);
